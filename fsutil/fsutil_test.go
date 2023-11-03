@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	testNotFoundFilePath = "./fs_test_not_found.go"
-	testExistFilePath    = "./fs_test.go"
+	testNotFoundFilePath = "./fsutil_test_not_found.go"
+	testExistFilePath    = "./fsutil_test.go"
 )
 
 func TestGetFileTime(t *testing.T) {
