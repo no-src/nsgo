@@ -2,10 +2,13 @@ package httputil
 
 import (
 	"bytes"
+	"io"
+	"io/fs"
 	"mime/multipart"
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -144,4 +147,26 @@ func (c *httpClient) HttpPostFileChunkWithCookie(url string, fieldName string, f
 
 func (c *httpClient) HttpPostWithoutRedirect(url string, data url.Values) (resp *http.Response, err error) {
 	return c.noRedirectClient.PostForm(url, data)
+}
+
+func (c *httpClient) Download(path, url string, alwaysDownload bool) error {
+	if len(url) == 0 {
+		return errEmptyUrl
+	}
+	if !alwaysDownload {
+		_, err := os.Stat(path)
+		if err == nil || !os.IsNotExist(err) {
+			return err
+		}
+	}
+	resp, err := c.HttpGet(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, data, fs.ModePerm)
 }

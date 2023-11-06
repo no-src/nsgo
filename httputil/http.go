@@ -17,6 +17,7 @@ const (
 var (
 	// errAppendCertsFromPemFailed attempts to parse a series of PEM encoded certificates failed
 	errAppendCertsFromPemFailed = errors.New("append certs from pem failed")
+	errEmptyUrl                 = errors.New("url is empty")
 )
 
 // HttpClient an HTTP client component that supports chunked file uploads using the POST method
@@ -33,6 +34,8 @@ type HttpClient interface {
 	HttpPostFileChunkWithCookie(url string, fieldName string, fileName string, data url.Values, chunk []byte, cookies ...*http.Cookie) (resp *http.Response, err error)
 	// HttpPostWithoutRedirect send a post request with form data and not auto redirect
 	HttpPostWithoutRedirect(url string, data url.Values) (resp *http.Response, err error)
+	// Download if the local file does not exist and the alwaysDownload is false, downloads the remote file to local path
+	Download(path, url string, alwaysDownload bool) error
 }
 
 // NewTLSConfig create a tls config
