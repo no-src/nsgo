@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 )
 
 var (
@@ -351,6 +352,59 @@ func TestHttpPostWithoutRedirect(t *testing.T) {
 			actual := resp.Header.Get("Location")
 			if tc.expectLocation != actual {
 				t.Errorf("HttpPostWithoutRedirect: expect Location => %s, but actual Location => %s url=%s", tc.expectLocation, actual, reqUrl)
+			}
+		})
+	}
+}
+
+func TestDownload(t *testing.T) {
+	initDefaultClient()
+	mux := http.NewServeMux()
+	remotePath := fmt.Sprintf("/hello_%d.txt", time.Now().UnixMilli())
+	localPath := "." + remotePath
+	content := "hello world"
+	mux.HandleFunc(remotePath, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, content)
+	})
+	server := httptest.NewServer(mux)
+	defer server.Close()
+	defer os.Remove(localPath)
+
+	reqUrl := server.URL + remotePath
+
+	testCases := []struct {
+		name           string
+		reqUrl         string
+		alwaysDownload bool
+	}{
+		{"0.download file with empty url", "", false},
+		{"1.download file", reqUrl, false},
+		{"2.download file again", reqUrl, false},
+		{"3.download file again force", reqUrl, true},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := testHttpClient.Download(localPath, tc.reqUrl, tc.alwaysDownload)
+			if len(tc.reqUrl) == 0 {
+				if !errors.Is(err, errEmptyUrl) {
+					t.Errorf("Download: expect get error %v but actual get %v, url=%s", errEmptyUrl, err, reqUrl)
+				}
+				return
+			}
+			if err != nil {
+				t.Errorf("Download: request error, url=%s err=%v", tc.reqUrl, err)
+				return
+			}
+
+			data, err := os.ReadFile(localPath)
+			if err != nil {
+				t.Errorf("Download: read file error, url=%s err=%v", tc.reqUrl, err)
+				return
+			}
+			actual := string(data)
+			if content != actual {
+				t.Errorf("Download: expect content => %s, but actual content => %s url=%s", content, actual, tc.reqUrl)
 			}
 		})
 	}
