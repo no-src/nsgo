@@ -3,7 +3,7 @@ module github.com/no-src/nsgo
 go 1.20
 
 require (
-	github.com/quic-go/quic-go v0.40.0
+	github.com/quic-go/quic-go v0.40.1
 	gopkg.in/yaml.v3 v3.0.1
 )
 
