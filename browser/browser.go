@@ -6,6 +6,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/no-src/nsgo/osutil"
 )
 
 // commands returns a list of possible commands to use to open an url.
@@ -38,7 +40,7 @@ func commands() [][]string {
 // OpenBrowser tries to open url in a browser and reports whether it succeeded.
 func OpenBrowser(url string) bool {
 	for _, args := range commands() {
-		if runtime.GOOS == "windows" {
+		if osutil.IsWindows() {
 			url = strings.ReplaceAll(url, "&", "^&")
 		} else {
 			url = strings.ReplaceAll(url, "&", `\&`)
