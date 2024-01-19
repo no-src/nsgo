@@ -57,7 +57,7 @@ func TestParseBytes(t *testing.T) {
 		t.Run(tc.s, func(t *testing.T) {
 			bytes, iec, err := ParseBytes(tc.s)
 			if err != nil {
-				t.Errorf("parse bytes error => %v", err)
+				t.Errorf("ParseBytes error => %v", err)
 				return
 			}
 			if bytes != tc.v {
@@ -66,6 +66,16 @@ func TestParseBytes(t *testing.T) {
 			}
 			if iec != tc.iec {
 				t.Errorf("IEC expect %v, but get %v", tc.iec, iec)
+				return
+			}
+
+			bytesInt, err := ParseBytesInt(tc.s)
+			if err != nil {
+				t.Errorf("ParseBytesInt error => %v", err)
+				return
+			}
+			if bytesInt != int(tc.v) {
+				t.Errorf("expect %d, but get %d", tc.v, bytesInt)
 				return
 			}
 		})
@@ -84,7 +94,12 @@ func TestParseBytesReturnError(t *testing.T) {
 		t.Run(tc.s, func(t *testing.T) {
 			_, _, err := ParseBytes(tc.s)
 			if err == nil {
-				t.Errorf("expect get an error, but get nil")
+				t.Errorf("ParseBytes expect get an error, but get nil")
+			}
+
+			_, err = ParseBytesInt(tc.s)
+			if err == nil {
+				t.Errorf("ParseBytesInt expect get an error, but get nil")
 			}
 		})
 	}
