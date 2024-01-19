@@ -16,6 +16,15 @@ func ParseBytes(s string) (bytes uint64, iec bool, err error) {
 	return bytes, iec, nil
 }
 
+// ParseBytesInt parse the string to bytes
+func ParseBytesInt(s string) (int, error) {
+	bytes, err := humanize.ParseBytes(s)
+	if err != nil {
+		return 0, err
+	}
+	return int(bytes), nil
+}
+
 // Bytes produces a human readable representation of an SI size
 func Bytes(b uint64) string {
 	return humanize.Bytes(b)
