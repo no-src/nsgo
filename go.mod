@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/dustin/go-humanize v1.0.1
-	github.com/quic-go/quic-go v0.42.0
+	github.com/quic-go/quic-go v0.43.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
