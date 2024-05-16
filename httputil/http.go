@@ -36,6 +36,12 @@ type HttpClient interface {
 	HttpPostWithoutRedirect(url string, data url.Values) (resp *http.Response, err error)
 	// Download if the local file does not exist and the alwaysDownload is false, downloads the remote file to local path
 	Download(path, url string, alwaysDownload bool) error
+	// HttpPostData send a post request with data
+	HttpPostData(url string, data []byte) (resp *http.Response, err error)
+	// HttpPut send a put request with data
+	HttpPut(url string, data []byte) (resp *http.Response, err error)
+	// HttpDelete send a delete request with data
+	HttpDelete(url string, data []byte) (resp *http.Response, err error)
 }
 
 // NewTLSConfig create a tls config
