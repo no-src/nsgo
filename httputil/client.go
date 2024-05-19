@@ -170,3 +170,24 @@ func (c *httpClient) Download(path, url string, alwaysDownload bool) error {
 	}
 	return os.WriteFile(path, data, fs.ModePerm)
 }
+
+func (c *httpClient) HttpPostData(url string, data []byte) (resp *http.Response, err error) {
+	return c.sendData(http.MethodPost, url, data)
+}
+
+func (c *httpClient) HttpPut(url string, data []byte) (resp *http.Response, err error) {
+	return c.sendData(http.MethodPut, url, data)
+}
+
+func (c *httpClient) HttpDelete(url string, data []byte) (resp *http.Response, err error) {
+	return c.sendData(http.MethodDelete, url, data)
+}
+
+func (c *httpClient) sendData(method string, url string, data []byte) (resp *http.Response, err error) {
+	req, err := http.NewRequest(method, url, bytes.NewReader(data))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	return c.defaultClient.Do(req)
+}

@@ -445,6 +445,129 @@ func TestNewHttpClient(t *testing.T) {
 	}
 }
 
+func TestHttpPostData(t *testing.T) {
+	initDefaultClient()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/post_data", func(w http.ResponseWriter, r *http.Request) {
+		data, _ := io.ReadAll(r.Body)
+		fmt.Fprintf(w, string(data))
+	})
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	testCases := []struct {
+		name       string
+		path       string
+		expectBody string
+	}{
+		{"return data hello", "/post_data", "hello"},
+		{"return data world", "/post_data", "world"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			reqUrl := server.URL + tc.path
+			resp, err := testHttpClient.HttpPostData(reqUrl, []byte(tc.expectBody))
+			if err != nil {
+				t.Errorf("HttpPostData: request error, url=%s err=%v", reqUrl, err)
+				return
+			}
+			defer resp.Body.Close()
+			data, err := io.ReadAll(resp.Body)
+			if err != nil {
+				t.Errorf("HttpPostData: read response body error, url=%s err=%v", reqUrl, err)
+				return
+			}
+			actual := string(data)
+			if tc.expectBody != actual {
+				t.Errorf("HttpPostData: expect body => %s, but actual body => %s url=%s", tc.expectBody, actual, reqUrl)
+			}
+		})
+	}
+}
+
+func TestHttpPut(t *testing.T) {
+	initDefaultClient()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/put_data", func(w http.ResponseWriter, r *http.Request) {
+		data, _ := io.ReadAll(r.Body)
+		fmt.Fprintf(w, string(data))
+	})
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	testCases := []struct {
+		name       string
+		path       string
+		expectBody string
+	}{
+		{"return data hello", "/put_data", "hello"},
+		{"return data world", "/put_data", "world"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			reqUrl := server.URL + tc.path
+			resp, err := testHttpClient.HttpPut(reqUrl, []byte(tc.expectBody))
+			if err != nil {
+				t.Errorf("HttpPut: request error, url=%s err=%v", reqUrl, err)
+				return
+			}
+			defer resp.Body.Close()
+			data, err := io.ReadAll(resp.Body)
+			if err != nil {
+				t.Errorf("HttpPut: read response body error, url=%s err=%v", reqUrl, err)
+				return
+			}
+			actual := string(data)
+			if tc.expectBody != actual {
+				t.Errorf("HttpPut: expect body => %s, but actual body => %s url=%s", tc.expectBody, actual, reqUrl)
+			}
+		})
+	}
+}
+
+func TestHttpDelete(t *testing.T) {
+	initDefaultClient()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/delete_data", func(w http.ResponseWriter, r *http.Request) {
+		data, _ := io.ReadAll(r.Body)
+		fmt.Fprintf(w, string(data))
+	})
+	server := httptest.NewServer(mux)
+	defer server.Close()
+
+	testCases := []struct {
+		name       string
+		path       string
+		expectBody string
+	}{
+		{"return data hello", "/delete_data", "hello"},
+		{"return data world", "/delete_data", "world"},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			reqUrl := server.URL + tc.path
+			resp, err := testHttpClient.HttpPut(reqUrl, []byte(tc.expectBody))
+			if err != nil {
+				t.Errorf("HttpDelete: request error, url=%s err=%v", reqUrl, err)
+				return
+			}
+			defer resp.Body.Close()
+			data, err := io.ReadAll(resp.Body)
+			if err != nil {
+				t.Errorf("HttpDelete: read response body error, url=%s err=%v", reqUrl, err)
+				return
+			}
+			actual := string(data)
+			if tc.expectBody != actual {
+				t.Errorf("HttpDelete: expect body => %s, but actual body => %s url=%s", tc.expectBody, actual, reqUrl)
+			}
+		})
+	}
+}
+
 func initDefaultClient() {
 	testHttpClient, _ = NewHttpClient(true, "", false)
 }
