@@ -34,7 +34,7 @@ func NewHttpClient(insecureSkipVerify bool, certFile string, enableHTTP3 bool) (
 
 	var rt http.RoundTripper
 	if enableHTTP3 {
-		rt = &http3.RoundTripper{
+		rt = &http3.Transport{
 			TLSClientConfig: tlsConfig,
 		}
 	} else {
